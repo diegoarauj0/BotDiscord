@@ -2,6 +2,7 @@ import discord from 'discord.js'
 import fs from 'fs/promises'
 import path from 'path'
 import Status from './class/status'
+import connect from './database/mongoose'
 import { Command } from './types/discord'
 
 class Client extends discord.Client {
@@ -24,6 +25,7 @@ class Client extends discord.Client {
     public start(): Promise<void> {
         return new Promise(async (resolve,reject) => {
             try {
+                await connect()
                 await this.loadCommands()
                 await this.loadEvents()
                 await this.startBot()
