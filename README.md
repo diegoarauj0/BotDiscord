@@ -1,0 +1,2 @@
+# NegativoBot
+ Bot Discord
