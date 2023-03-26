@@ -1,5 +1,6 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, CacheType, EmbedBuilder } from 'discord.js'
 import Client from '../client'
+import discord from 'discord.js'
 
 const SlashCommand = new SlashCommandBuilder()
 .setName('ping')

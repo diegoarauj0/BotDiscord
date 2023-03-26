@@ -14,8 +14,7 @@ class Client extends discord.Client {
     private botStatus:Status
 
     constructor(token:string, id:string) {
-        super({intents:[ 'GuildModeration' ]})
-
+        super({intents:[ 'GuildModeration', 'Guilds', 'GuildMembers', 'GuildMessages', 'MessageContent', 'GuildMessageTyping', 'DirectMessages' ]})
         this.botId = id
         this.botToken = token
         this.REST = new discord.REST({ version:'10' }).setToken(this.botToken)
