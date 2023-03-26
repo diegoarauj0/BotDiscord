@@ -11,14 +11,13 @@ class Client extends discord.Client {
     private botId:string
     public botCommands:discord.Collection<string, Command> = new discord.Collection()
     private REST:discord.REST
-    private botStatus:Status
+    private botStatus:discord.Collection<string, {text:string, Activity:discord.ActivityOptions}> = new discord.Collection
 
     constructor(token:string, id:string) {
         super({intents:[ 'GuildModeration', 'Guilds', 'GuildMembers', 'GuildMessages', 'MessageContent', 'GuildMessageTyping', 'DirectMessages' ]})
         this.botId = id
         this.botToken = token
         this.REST = new discord.REST({ version:'10' }).setToken(this.botToken)
-        this.botStatus = new Status(this)
     }
 
     public start(): Promise<void> {
@@ -28,7 +27,7 @@ class Client extends discord.Client {
                 await this.loadCommands()
                 await this.loadEvents()
                 await this.startBot()
-                this.botStatus.start()
+                this.loadStatus()
                 resolve()
             } catch(reason) {
                 reject(reason)
@@ -109,6 +108,25 @@ class Client extends discord.Client {
                 }
             })
         }
+    }
+
+    private loadStatus(): void {
+        this.botStatus.set('1',{ text:'o servidor', Activity:{type:discord.ActivityType.Watching} })
+        this.botStatus.set('2',{ text:'Programar esse bot ta dificil em...', Activity:{type:discord.ActivityType.Watching}})
+        this.botStatus.set('3',{ text:'boa noite', Activity:{type:discord.ActivityType.Watching} })
+        this.botStatus.set('4',{ text:'no ceu tem pão', Activity:{type:discord.ActivityType.Watching} })
+        console.log('--Status--')
+        console.log('AVISO:(esse status vai ser publico para qualquer pessoa ver, se você colocar coisa erradas o discord pode banir sua conta)')
+        this.botStatus.forEach((value) => {
+            console.log(`o status "${value.text}" foi adicionado ao bot`)
+        })
+        console.log('--Status--')
+        let statusRandom = this.botStatus.random()
+        if (statusRandom) {this.user?.setActivity(statusRandom?.text, statusRandom?.Activity);console.log(`O status "${statusRandom.text}" do tipo "${statusRandom.Activity.type?.toString() || ''}" esta ativado nesse momento`)}
+        setInterval(() => {
+            statusRandom = this.botStatus.random()
+            if (statusRandom) {this.user?.setActivity(statusRandom?.text, statusRandom?.Activity);console.log(`O status "${statusRandom.text}" do tipo "${statusRandom.Activity.type?.toString() || ''}" esta ativado nesse momento`)}
+        },600000)
     }
 
     private startBot(): Promise<void> {
