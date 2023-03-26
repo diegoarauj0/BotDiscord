@@ -7,7 +7,6 @@ export default (guild:discord.Guild, client:Client): void => {
     guildModel.findOne({guildId:guild.id})
     .then((Guild) => {
         if (!Guild) {
-            console.log('1')
             guildModel.create({
                 guildId:guild.id
             }).catch(() => {return})
