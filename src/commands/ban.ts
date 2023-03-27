@@ -43,7 +43,7 @@ export default {
         .setAuthor({ name:interaction.user.username, iconURL:interaction.user.displayAvatarURL()})
         .setTimestamp()
 
-        if (!interaction.member.permissions.has(PermissionFlagsBits.KickMembers)) {
+        if (!interaction.member.permissions.has(PermissionFlagsBits.BanMembers)) {
             embed
             .setColor('Red')
             .setTitle('❌ Permissão negada Membro ❌')

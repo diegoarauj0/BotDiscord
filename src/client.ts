@@ -13,7 +13,7 @@ class Client extends discord.Client {
     private botStatus:discord.Collection<string, {text:string, Activity:discord.ActivityOptions}> = new discord.Collection
 
     constructor(token:string, id:string) {
-        super({intents:[ 'GuildModeration', 'Guilds', 'GuildMembers', 'GuildMessages', 'MessageContent', 'GuildMessageTyping', 'DirectMessages' ]})
+        super({intents:[ 'GuildModeration', 'Guilds', 'GuildMembers', 'GuildMessages', 'MessageContent', 'GuildMessageTyping', 'DirectMessages', 'GuildBans' ]})
         this.botId = id
         this.botToken = token
         this.REST = new discord.REST({ version:'10' }).setToken(this.botToken)
