@@ -1,7 +1,6 @@
 import discord from 'discord.js'
 import fs from 'fs/promises'
 import path from 'path'
-import Status from './class/status'
 import connect from './database/mongoose'
 import { Command } from './types/discord'
 
