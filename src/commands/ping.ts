@@ -4,9 +4,14 @@ import discord from 'discord.js'
 
 const SlashCommand = new SlashCommandBuilder()
 .setName('ping')
+.setNameLocalizations({
+    "en-US":'ping',
+    'pt-BR':'ping'
+})
 .setDescription('return "pong"')
 .setDescriptionLocalizations({
-    'pt-BR':'retornar "pong"'
+    'pt-BR':'retornar "pong"',
+    'en-US':'return "pong"'
 })
 
 export default {

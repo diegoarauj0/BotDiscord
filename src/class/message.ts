@@ -1,4 +1,5 @@
-import { PermissionsString, EmbedBuilder, LocaleString, User, ChatInputCommandInteraction } from 'discord.js'
+import { PermissionsString, EmbedBuilder, LocaleString, User, Collection, APIEmbedField } from 'discord.js'
+import { Command } from '../types/discord'
 
 interface TranslateActive {
     [key:string]:string | undefined,
@@ -127,6 +128,27 @@ class Message {
         let embed = this.createEmbed(true)
         .setTitle(`❌ ${titleTranslate[this.languages] || titleTranslate['en-US']} ❌`)
         .setDescription(descriptionTranslate[this.languages] || descriptionTranslate['en-US'])
+
+        return embed
+    }
+
+    public messageHelp(commands:Collection<string, Command>): EmbedBuilder {
+
+        let titleTranslate:TranslateActive = {
+            "en-US":'list of commands',
+            'pt-BR':'Lista de comandos'
+        }
+
+        let fields:Array<APIEmbedField> = []
+        commands.map((command) => {
+            fields.push({
+                name:`/${command.data.name_localizations?.[this.languages] || command.data.name}`,
+                value:command.data.description_localizations?.[this.languages] || command.data.description
+            })
+        })
+        let embed = this.createEmbed(false)
+        .setTitle(`${titleTranslate[this.languages] || titleTranslate['en-US']}`)
+        .setFields(fields)
 
         return embed
     }
