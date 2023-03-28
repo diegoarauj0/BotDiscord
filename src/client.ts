@@ -119,11 +119,7 @@ class Client extends discord.Client {
 
     private loadStatus(): void {
         this.botStatus.set('1',{ text:'o servidor', Activity:{type:discord.ActivityType.Watching} })
-        this.botStatus.set('2',{ text:'Programar esse bot ta dificil em...', Activity:{type:discord.ActivityType.Watching}})
-        this.botStatus.set('3',{ text:'boa noite', Activity:{type:discord.ActivityType.Watching} })
-        this.botStatus.set('4',{ text:'no ceu tem pão', Activity:{type:discord.ActivityType.Watching} })
         console.log('--Status--')
-        console.log('AVISO:(esse status vai ser publico para qualquer pessoa ver, se você colocar coisa erradas o discord pode banir sua conta)')
         this.botStatus.forEach((value) => {
             console.log(`o status "${value.text}" foi adicionado ao bot`)
         })

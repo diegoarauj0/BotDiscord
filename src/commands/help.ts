@@ -18,6 +18,9 @@ export default {
     data:SlashCommand,
     async execute (interaction:ChatInputCommandInteraction<CacheType>, client:Client) {
 
+        client.botMessage.languages = interaction.locale
+        client.botMessage.user = interaction.user
+
         client.botMessage.messageHelp(client.botCommands)
 
         let embed = client.botMessage.messageHelp(client.botCommands)
