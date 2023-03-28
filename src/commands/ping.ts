@@ -4,7 +4,10 @@ import discord from 'discord.js'
 
 const SlashCommand = new SlashCommandBuilder()
 .setName('ping')
-.setDescription('mostrar o ping')
+.setDescription('return "pong"')
+.setDescriptionLocalizations({
+    'pt-BR':'retornar "pong"'
+})
 
 export default {
     data:SlashCommand,

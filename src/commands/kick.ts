@@ -6,17 +6,28 @@ const SlashCommand = new SlashCommandBuilder()
 .setDescription('expulsar o membro do servidor')
 .addUserOption(Option =>
     Option
-    .setName('user')
-    .setDescription('o usuário a ser expulso')
+    .setName('member')
+    .setNameLocalizations({
+        'pt-BR':'membros'
+    })
+    .setDescription('member to be banned')
+    .setDescriptionLocalizations({
+        'pt-BR':'membro a ser banido'
+    })
     .setRequired(true)
 )
 .addStringOption(Option => 
     Option
     .setName('reason')
-    .setDescription('o motivo pela qual o usuário vai ser expulso')
+    .setNameLocalizations({
+        'pt-BR':'motivo'
+    })
+    .setDescription('reason for the ban')
+    .setDescriptionLocalizations({
+        'pt-BR':'motivo do banimento'
+    })
     .setRequired(false)
 )
-
 export default {
     data:SlashCommand,
     async execute (interaction:ChatInputCommandInteraction<any>, client:Client) {
@@ -35,7 +46,7 @@ export default {
             return
         }
 
-        let userOption = interaction.options.getUser('user', true)
+        let userOption = interaction.options.getUser('member', true)
         let reasonOption = interaction.options.getString('reason')
 
         let user = interaction.guild.members.cache.get(userOption.id)

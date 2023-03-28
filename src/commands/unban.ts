@@ -3,17 +3,35 @@ import Client from '../client'
 
 const SlashCommand = new SlashCommandBuilder()
 .setName('unban')
-.setDescription('desbanir um membro')
-.addStringOption(Option =>
+.setNameLocalizations({
+    'pt-BR':'desbanir'
+})
+.setDescription('unban a user from the server')
+.setDescriptionLocalizations({
+    'pt-BR':'desbanir um usuário do servidor'
+})
+.addUserOption(Option =>
     Option
     .setName('userid')
-    .setDescription('o usuário a ser expulso')
+    .setNameLocalizations({
+        'pt-BR':'iduser'
+    })
+    .setDescription('ID of the user your want to unban')
+    .setDescriptionLocalizations({
+        'pt-BR':'ID do usuário que você deseja desbanir'
+    })
     .setRequired(true)
 )
 .addStringOption(Option => 
     Option
     .setName('reason')
-    .setDescription('o motivo pela qual o usuário vai ser expulso')
+    .setNameLocalizations({
+        'pt-BR':'motivo'
+    })
+    .setDescription('reason for the ban')
+    .setDescriptionLocalizations({
+        'pt-BR':'motivo do banimento'
+    })
     .setRequired(false)
 )
 

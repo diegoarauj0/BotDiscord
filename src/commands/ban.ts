@@ -3,38 +3,51 @@ import Client from '../client'
 
 const SlashCommand = new SlashCommandBuilder()
 .setName('ban')
-.setDescription('banir o membro do servidor')
+.setNameLocalizations({
+    'pt-BR':'banir'
+})
+.setDescription('ban a user from the server')
+.setDescriptionLocalizations({
+    'pt-BR':'banir um usuário do servidor'
+})
 .addUserOption(Option =>
     Option
-    .setName('user')
-    .setDescription('o usuário a ser expulso')
+    .setName('member')
+    .setNameLocalizations({
+        'pt-BR':'membros'
+    })
+    .setDescription('member to be banned')
+    .setDescriptionLocalizations({
+        'pt-BR':'membro a ser banido'
+    })
     .setRequired(true)
 )
 .addStringOption(Option => 
     Option
     .setName('reason')
-    .setDescription('o motivo pela qual o usuário vai ser expulso')
-    .setRequired(false)
-)
-.addNumberOption(Option =>
-    Option
-    .setName('days')
-    .setDescription('quantos dias a pessoa vai ficar banida')
+    .setNameLocalizations({
+        'pt-BR':'motivo'
+    })
+    .setDescription('reason for the ban')
+    .setDescriptionLocalizations({
+        'pt-BR':'motivo do banimento'
+    })
     .setRequired(false)
 )
 .addNumberOption(Option =>
     Option
     .setName('hours')
-    .setDescription('quantas horas a pessoa vai ficar banida')
+    .setNameLocalizations({
+        'pt-BR':'horas'
+    })
+    .setDescriptionLocalizations({
+        'pt-BR':'excluir histórico de mensagens em horas'
+    })
+    .setDescription('delete message history in hours')
+    .setMaxValue(168)
+    .setMinValue(1)
     .setRequired(false)
 )
-.addNumberOption(Option =>
-    Option
-    .setName('minutes')
-    .setDescription('quantos minutos a pessoa vai ficar banida')
-    .setRequired(false)
-)
-
 export default {
     data:SlashCommand,
     async execute (interaction:ChatInputCommandInteraction<any>, client:Client) {
@@ -53,7 +66,7 @@ export default {
             return
         }
 
-        let userOption = interaction.options.getUser('user', true)
+        let userOption = interaction.options.getUser('member', true)
         let reasonOption = interaction.options.getString('reason')
 
         let user = interaction.guild.members.cache.get(userOption.id)
@@ -68,16 +81,12 @@ export default {
             return
         }
 
-        let daysOption = interaction.options.getNumber('days', false) || 0
         let hoursOption = interaction.options.getNumber('hours', false) || 0
-        let minutesOption = interaction.options.getNumber('minutes', false) || 0
 
         let seconds = 0
-        seconds += minutesOption * 60
         seconds += hoursOption * 3600
-        seconds += daysOption * 86400
 
-        let reason = `o ${interaction.user.username}#${interaction.user.discriminator} me pediu para banir o ${user.user.username}. tempo:${seconds == 0?'indeterminado':`dias:${daysOption} horas:${hoursOption}, minutos:${minutesOption}`}, o motivos foi: ${reasonOption || ''}`
+        let reason = `o ${interaction.user.username}#${interaction.user.discriminator} me pediu para banir o ${user.user.username}. o motivos foi: ${reasonOption || ''}`
 
         user.ban({reason:reason, deleteMessageSeconds:seconds == 0?undefined:seconds})
         .then((user) => {

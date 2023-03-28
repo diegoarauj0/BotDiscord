@@ -3,11 +3,25 @@ import Client from '../client'
 
 const SlashCommand = new SlashCommandBuilder()
 .setName('clear')
-.setDescription('deletar as mensagem do chat')
+.setNameLocalizations({
+    'pt-BR':'clear'
+})
+.setDescription('clear messages from a channel')
+.setDescriptionLocalizations({
+    'pt-BR':'limpar mensagens de um canal'
+})
 .addNumberOption(Option =>
     Option
-    .setName('mensagem_numero')
-    .setDescription('quantas mensagem vão ser excluídas')
+    .setName('amount')
+    .setNameLocalizations({
+        'pt-BR':'quantos'
+    })
+    .setDescription('amount of message to clear')
+    .setDescriptionLocalizations({
+        'pt-BR':'quantidade de mensagem para deletar'
+    })
+    .setMaxValue(100)
+    .setMinValue(1)
     .setRequired(true)
 )
 
@@ -29,27 +43,7 @@ export default {
             return
         }
 
-        let messageNumber = interaction.options.getNumber('mensagem_numero', true)
-
-        if (messageNumber < 1) {
-            embed
-            .setColor('Red')
-            .setTitle('❌ Opção invalida ❌')
-            .setDescription('o numero de mensagem precisa ser maior do que 1')
-
-            interaction.reply({ embeds:[embed], ephemeral:true })
-            return
-        }
-
-        if (messageNumber > 100) {
-            embed
-            .setColor('Red')
-            .setTitle('❌ Opção invalida ❌')
-            .setDescription('o numero de mensagem precisa ser menor do que 100')
-
-            interaction.reply({ embeds:[embed], ephemeral:true })
-            return
-        }
+        let messageNumber = interaction.options.getNumber('amount', true)
 
         let channel = interaction.channel
 

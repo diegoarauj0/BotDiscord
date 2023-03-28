@@ -4,7 +4,10 @@ import discord from 'discord.js'
 
 const SlashCommand = new SlashCommandBuilder()
 .setName('help')
-.setDescription('mostrar todos os comandos do bot')
+.setDescription('show command list')
+.setDescriptionLocalizations({
+    'pt-BR':'mostrar lista comandos'
+})
 
 export default {
     data:SlashCommand,
