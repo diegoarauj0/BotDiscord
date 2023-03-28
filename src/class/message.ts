@@ -1,4 +1,4 @@
-import { PermissionsString, EmbedBuilder, LocaleString, User } from 'discord.js'
+import { PermissionsString, EmbedBuilder, LocaleString, User, ChatInputCommandInteraction } from 'discord.js'
 
 interface TranslateActive {
     [key:string]:string | undefined,
@@ -103,6 +103,25 @@ class Message {
         let descriptionTranslate:TranslateActive = {
             "en-US":`permission require: ${this.permissionTranslate(permission)}`,
             'pt-BR':`permissão necessária: ${this.permissionTranslate(permission)}`
+        }
+
+        let embed = this.createEmbed(true)
+        .setTitle(`❌ ${titleTranslate[this.languages] || titleTranslate['en-US']} ❌`)
+        .setDescription(descriptionTranslate[this.languages] || descriptionTranslate['en-US'])
+
+        return embed
+    }
+
+    public messageBannableOrkickable(action:'kickable' |'bannable'): EmbedBuilder {
+
+        let titleTranslate:TranslateActive = {
+            "en-US":'Permission denied bot',
+            'pt-BR':'permissão negada bot'
+        }
+
+        let descriptionTranslate:TranslateActive = {
+            "en-US":`I can't ${action == 'kickable'?'kick':'ban'} this user`,
+            'pt-BR':`não posso ${action == 'kickable'?'expulsar':'banir'} esse usuário, provavelmente ele tem um cargo maior do que eu`
         }
 
         let embed = this.createEmbed(true)

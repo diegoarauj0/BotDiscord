@@ -56,54 +56,42 @@ export default {
         client.botMessage.user = interaction.user
 
         if (!interaction.appPermissions?.has('BanMembers')) {
-            let embed = client.botMessage.messageBotPermission('BanMembers')
-            interaction.reply({ embeds:[embed], ephemeral:true })
-            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
-            .catch(() => {return})
+            client.replyCommand(client.botMessage.messageBotPermission('BanMembers'), interaction)
             return
         }
 
         if (!interaction.member.permissions.has(PermissionFlagsBits.BanMembers)) {
-            let embed = client.botMessage.messageUserPermission('BanMembers')
-            interaction.reply({ embeds:[embed], ephemeral:true })
-            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
-            .catch(() => {return})
+            client.replyCommand(client.botMessage.messageUserPermission('BanMembers'), interaction)
             return
         }
 
         let memberOption = interaction.options.getUser('member', true)
         let reasonOption = interaction.options.getString('reason')
-
         let member = interaction.guild.members.cache.get(memberOption.id)
 
         if (!member) {
-            let embed = client.botMessage.messageNotFound('member')
-            interaction.reply({ embeds:[embed], ephemeral:true })
-            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
-            .catch(() => {return})
+            client.replyCommand(client.botMessage.messageNotFound('member'), interaction)
+            return
+        }
+
+        if (!member.bannable) {
+            client.replyCommand(client.botMessage.messageBannableOrkickable('bannable'), interaction)
             return
         }
 
         client.botMessage.target = member.user
+        
         let hoursOption = interaction.options.getNumber('hours', false)
-
         let deleteMessageSeconds:number | undefined = 0
         deleteMessageSeconds = !hoursOption?undefined:hoursOption * 3600
-        
         let reason = `${interaction.user.username}#${interaction.user.discriminator} => ${member.user.username}#${member.user.discriminator}: ${reasonOption || 'not found'}`
 
         member.ban({reason:reason, deleteMessageSeconds:deleteMessageSeconds})
         .then(() => {
-            let embed = client.botMessage.messageActionSuccess('ban')
-            interaction.reply({ embeds:[embed], ephemeral:true })
-            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
-            .catch(() => {return})
+            client.replyCommand(client.botMessage.messageActionSuccess('ban'),interaction)
         })
         .catch(() => {
-            let embed = client.botMessage.messageBotError()
-            interaction.reply({ embeds:[embed], ephemeral:true })
-            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
-            .catch(() => {return})
+            client.replyCommand(client.botMessage.messageBotError(),interaction)
         }) 
     }
 }

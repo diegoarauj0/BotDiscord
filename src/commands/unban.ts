@@ -43,18 +43,12 @@ export default {
         client.botMessage.user = interaction.user
 
         if (!interaction.appPermissions?.has('BanMembers')) {
-            let embed = client.botMessage.messageBotPermission('BanMembers')
-            interaction.reply({ embeds:[embed], ephemeral:true })
-            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
-            .catch(() => {return})
+            client.replyCommand(client.botMessage.messageBotPermission('BanMembers'), interaction)
             return
         }
 
         if (!interaction.member.permissions.has(PermissionFlagsBits.BanMembers)) {
-            let embed = client.botMessage.messageUserPermission('BanMembers')
-            interaction.reply({ embeds:[embed], ephemeral:true })
-            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
-            .catch(() => {return})
+            client.replyCommand(client.botMessage.messageUserPermission('BanMembers'), interaction)
             return
         }
 
@@ -65,10 +59,7 @@ export default {
         .then(async (bans) => {
             let userBan = bans.get(userIdOption)
             if (!userBan) {
-                let embed = client.botMessage.messageNotFound('member')
-                interaction.reply({ embeds:[embed], ephemeral:true })
-                .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
-                .catch(() => {return})
+                client.replyCommand(client.botMessage.messageNotFound('member'), interaction)
                 return
             }
             let user = userBan.user
@@ -78,24 +69,16 @@ export default {
             interaction.guild.members.unban(user.id,reason)
             .then(() => {
                 client.botMessage.target = user
-
-                let embed = client.botMessage.messageActionSuccess('unban')
-                interaction.reply({ embeds:[embed], ephemeral:true })
-                .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
-                .catch(() => {return})
+                client.replyCommand(client.botMessage.messageActionSuccess('unban'),interaction)
+                return
             })
             .catch(() => {
-                let embed = client.botMessage.messageBotError()
-                interaction.reply({ embeds:[embed], ephemeral:true })
-                .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
-                .catch(() => {return})
+                client.replyCommand(client.botMessage.messageBotError(),interaction)
+                return
             })
         })
         .catch(() => {
-            let embed = client.botMessage.messageBotError()
-            interaction.reply({ embeds:[embed], ephemeral:true })
-            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
-            .catch(() => {return})
+            client.replyCommand(client.botMessage.messageBotError(),interaction)
         })
     }
 }

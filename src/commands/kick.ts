@@ -36,31 +36,26 @@ export default {
         client.botMessage.user = interaction.user
 
         if (!interaction.appPermissions?.has('KickMembers')) {
-            let embed = client.botMessage.messageBotPermission('KickMembers')
-            interaction.reply({ embeds:[embed], ephemeral:true })
-            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
-            .catch(() => {return})
+            client.replyCommand(client.botMessage.messageBotPermission('KickMembers'), interaction)
             return
         }
 
         if (!interaction.member.permissions.has(PermissionFlagsBits.KickMembers)) {
-            let embed = client.botMessage.messageUserPermission('KickMembers')
-            interaction.reply({ embeds:[embed], ephemeral:true })
-            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
-            .catch(() => {return})
+            client.replyCommand(client.botMessage.messageUserPermission('KickMembers'), interaction)
             return
         }
 
         let userOption = interaction.options.getUser('member', true)
         let reasonOption = interaction.options.getString('reason')
-
         let member = interaction.guild.members.cache.get(userOption.id)
 
         if (!member) {
-            let embed = client.botMessage.messageNotFound('member')
-            interaction.reply({ embeds:[embed], ephemeral:true })
-            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
-            .catch(() => {return})
+            client.replyCommand(client.botMessage.messageNotFound('member'),interaction)
+            return
+        }
+
+        if (!member.kickable) {
+            client.replyCommand(client.botMessage.messageBannableOrkickable('kickable'), interaction)
             return
         }
 
@@ -69,17 +64,10 @@ export default {
         member.kick(reason)
         .then((member) => {
             client.botMessage.target = member.user
-
-            let embed = client.botMessage.messageActionSuccess('kick')
-            interaction.reply({ embeds:[embed], ephemeral:true })
-            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
-            .catch(() => {return})
+            client.replyCommand(client.botMessage.messageActionSuccess('kick'),interaction)
         })
         .catch(() => {
-            let embed = client.botMessage.messageBotError()
-            interaction.reply({ embeds:[embed], ephemeral:true })
-            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
-            .catch(() => {return})
+            client.replyCommand(client.botMessage.messageBotError(),interaction)
         }) 
     }
 }

@@ -33,20 +33,12 @@ export default {
         client.botMessage.user = interaction.user
 
         if (!interaction.appPermissions?.has('ManageMessages')) {
-            let embed = client.botMessage.messageBotPermission('ManageMessages')
-            interaction.reply({ embeds:[embed], ephemeral:true })
-            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
-            .catch(() => {return})
+            client.replyCommand(client.botMessage.messageBotPermission('ManageMessages'),interaction)
             return
         }
 
         if (!interaction.member.permissions.has(PermissionFlagsBits.ManageMessages)) {
-
-            let embed = client.botMessage.messageUserPermission('ManageMessages')
-
-            interaction.reply({ embeds:[embed], ephemeral:true })
-            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
-            .catch(() => {return})
+            client.replyCommand(client.botMessage.messageUserPermission('ManageMessages'),interaction)
             return
         }
 
@@ -54,30 +46,16 @@ export default {
         let channel = interaction.channel
 
         if (!channel) {
-
-            let embed = client.botMessage.messageNotFound('channel')
-
-            interaction.reply({ embeds:[embed], ephemeral:true })
-            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
-            .catch(() => {return})
+            client.replyCommand(client.botMessage.messageNotFound('channel'),interaction)
             return
         }
         
-        channel.bulkDelete(amountOption).catch(() => {
-
-            let embed = client.botMessage.messageBotError()
-
-            interaction.reply({ embeds:[embed], ephemeral:true })
-            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
-            .catch(() => {return})
-        })
+        channel.bulkDelete(amountOption)
         .then(() => {
-
-            let embed = client.botMessage.messageActionSuccess('clear')
-
-            interaction.reply({ embeds:[embed], ephemeral:true })
-            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
-            .catch(() => {return})
+            client.replyCommand(client.botMessage.messageActionSuccess('clear'),interaction)
+        })
+        .catch(() => {
+            client.replyCommand(client.botMessage.messageBotError(),interaction)
         })
     }
 }

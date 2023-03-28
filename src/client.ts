@@ -1,4 +1,4 @@
-import discord from 'discord.js'
+import discord, { EmbedBuilder, ChatInputCommandInteraction } from 'discord.js'
 import fs from 'fs/promises'
 import path from 'path'
 import connect from './database/mongoose'
@@ -13,13 +13,18 @@ class Client extends discord.Client {
     private REST:discord.REST
     private botStatus:discord.Collection<string, {text:string, Activity:discord.ActivityOptions}> = new discord.Collection
     public botMessage:Message = new Message()
-    public botCommandDeleteTime = 5000
+    public replyCommand:(embed:EmbedBuilder, interaction:ChatInputCommandInteraction<any>) => void
 
     constructor(token:string, id:string) {
         super({intents:[ 'GuildModeration', 'Guilds', 'GuildMembers', 'GuildMessages', 'MessageContent', 'GuildMessageTyping', 'DirectMessages', 'GuildBans' ]})
         this.botId = id
         this.botToken = token
         this.REST = new discord.REST({ version:'10' }).setToken(this.botToken)
+        this.replyCommand = (embed, interaction) => {
+            interaction.reply({ embeds:[embed], ephemeral:true })
+            .then((message) => {setTimeout(() => {message.delete()}, 10000)})
+            .catch(() => {return})
+        }
     }
 
     public start(): Promise<void> {
