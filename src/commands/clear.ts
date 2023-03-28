@@ -29,47 +29,55 @@ export default {
     data:SlashCommand,
     async execute (interaction:ChatInputCommandInteraction<any>, client:Client) {
 
-        let embed = new EmbedBuilder()
-        .setAuthor({ name:interaction.user.username, iconURL:interaction.user.displayAvatarURL()})
-        .setTimestamp()
+        client.botMessage.languages = interaction.locale
+        client.botMessage.user = interaction.user
 
-        if (!interaction.member.permissions.has(PermissionFlagsBits.ManageMessages)) {
-            embed
-            .setColor('Red')
-            .setTitle('❌ Permissão negada Membro ❌')
-            .setDescription('permissão necessária: gerenciar mensagem')
-
+        if (!interaction.appPermissions?.has('ManageMessages')) {
+            let embed = client.botMessage.messageBotPermission('ManageMessages')
             interaction.reply({ embeds:[embed], ephemeral:true })
+            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
+            .catch(() => {return})
             return
         }
 
-        let messageNumber = interaction.options.getNumber('amount', true)
+        if (!interaction.member.permissions.has(PermissionFlagsBits.ManageMessages)) {
 
+            let embed = client.botMessage.messageUserPermission('ManageMessages')
+
+            interaction.reply({ embeds:[embed], ephemeral:true })
+            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
+            .catch(() => {return})
+            return
+        }
+
+        let amountOption = interaction.options.getNumber('amount', true)
         let channel = interaction.channel
 
         if (!channel) {
-            embed
-            .setColor('Red')
-            .setTitle('❌ Permissão negada Bot ❌')
-            .setDescription('eu não tenho permissão para alterar/ver o canal')
+
+            let embed = client.botMessage.messageNotFound('channel')
 
             interaction.reply({ embeds:[embed], ephemeral:true })
+            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
+            .catch(() => {return})
             return
         }
+        
+        channel.bulkDelete(amountOption).catch(() => {
 
-        await channel.bulkDelete(messageNumber).catch(() => {return})
+            let embed = client.botMessage.messageBotError()
 
-        embed
-        .setColor('Green')
-        .setTitle('✅ Sucesso ✅')
-        .setDescription('Mensagem Apagada com sucesso')
-
-        interaction.reply({ embeds:[embed] })
-        .then((message) => {
-            setTimeout(() => {
-                message.delete()
-            },5000)
+            interaction.reply({ embeds:[embed], ephemeral:true })
+            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
+            .catch(() => {return})
         })
-        .catch(() => {return})   
+        .then(() => {
+
+            let embed = client.botMessage.messageActionSuccess('clear')
+
+            interaction.reply({ embeds:[embed], ephemeral:true })
+            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
+            .catch(() => {return})
+        })
     }
 }

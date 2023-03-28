@@ -32,55 +32,54 @@ export default {
     data:SlashCommand,
     async execute (interaction:ChatInputCommandInteraction<any>, client:Client) {
 
-        let embed = new EmbedBuilder()
-        .setAuthor({ name:interaction.user.username, iconURL:interaction.user.displayAvatarURL()})
-        .setTimestamp()
+        client.botMessage.languages = interaction.locale
+        client.botMessage.user = interaction.user
+
+        if (!interaction.appPermissions?.has('KickMembers')) {
+            let embed = client.botMessage.messageBotPermission('KickMembers')
+            interaction.reply({ embeds:[embed], ephemeral:true })
+            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
+            .catch(() => {return})
+            return
+        }
 
         if (!interaction.member.permissions.has(PermissionFlagsBits.KickMembers)) {
-            embed
-            .setColor('Red')
-            .setTitle('❌ Permissão negada Membro ❌')
-            .setDescription('permissão necessária: expulsar membro')
-
+            let embed = client.botMessage.messageUserPermission('KickMembers')
             interaction.reply({ embeds:[embed], ephemeral:true })
+            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
+            .catch(() => {return})
             return
         }
 
         let userOption = interaction.options.getUser('member', true)
         let reasonOption = interaction.options.getString('reason')
 
-        let user = interaction.guild.members.cache.get(userOption.id)
+        let member = interaction.guild.members.cache.get(userOption.id)
 
-        if (!user) {
-            embed
-            .setColor('Red')
-            .setTitle('❌ não encontrado ❌')
-            .setDescription('não consigo encontrar esse usuário')
-
+        if (!member) {
+            let embed = client.botMessage.messageNotFound('member')
             interaction.reply({ embeds:[embed], ephemeral:true })
+            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
+            .catch(() => {return})
             return
         }
 
-        let reason = `o ${interaction.user.username}#${interaction.user.discriminator} me pediu para expulsar o ${user.user.username}, o motivos foi: ${reasonOption || ''}`
+        let reason = `${interaction.user.username}#${interaction.user.discriminator} => ${member.user.username}#${member.user.discriminator}: ${reasonOption || ''}`
 
-        user.kick(reason)
-        .then((user) => {
-            embed
-            .setColor('Green')
-            .setTitle('✅ Sucesso ✅')
-            .setThumbnail(user.user.displayAvatarURL())
-            .setDescription(`o ${user.user.username} foi expulso com sucesso`)
+        member.kick(reason)
+        .then((member) => {
+            client.botMessage.target = member.user
 
+            let embed = client.botMessage.messageActionSuccess('kick')
             interaction.reply({ embeds:[embed], ephemeral:true })
-            return
+            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
+            .catch(() => {return})
         })
         .catch(() => {
-            embed
-            .setColor('Red')
-            .setTitle('❌ Permissão negada Bot ❌')
-            .setDescription('eu não tenho permissão para expulsar esse membro')
-
+            let embed = client.botMessage.messageBotError()
             interaction.reply({ embeds:[embed], ephemeral:true })
+            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
+            .catch(() => {return})
         }) 
     }
 }

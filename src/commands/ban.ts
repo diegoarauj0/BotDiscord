@@ -52,60 +52,58 @@ export default {
     data:SlashCommand,
     async execute (interaction:ChatInputCommandInteraction<any>, client:Client) {
 
-        let embed = new EmbedBuilder()
-        .setAuthor({ name:interaction.user.username, iconURL:interaction.user.displayAvatarURL()})
-        .setTimestamp()
+        client.botMessage.languages = interaction.locale
+        client.botMessage.user = interaction.user
+
+        if (!interaction.appPermissions?.has('BanMembers')) {
+            let embed = client.botMessage.messageBotPermission('BanMembers')
+            interaction.reply({ embeds:[embed], ephemeral:true })
+            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
+            .catch(() => {return})
+            return
+        }
 
         if (!interaction.member.permissions.has(PermissionFlagsBits.BanMembers)) {
-            embed
-            .setColor('Red')
-            .setTitle('❌ Permissão negada Membro ❌')
-            .setDescription('permissão necessária: banir membro')
-
+            let embed = client.botMessage.messageUserPermission('BanMembers')
             interaction.reply({ embeds:[embed], ephemeral:true })
+            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
+            .catch(() => {return})
             return
         }
 
-        let userOption = interaction.options.getUser('member', true)
+        let memberOption = interaction.options.getUser('member', true)
         let reasonOption = interaction.options.getString('reason')
 
-        let user = interaction.guild.members.cache.get(userOption.id)
+        let member = interaction.guild.members.cache.get(memberOption.id)
 
-        if (!user) {
-            embed
-            .setColor('Red')
-            .setTitle('❌ não encontrado ❌')
-            .setDescription('não consigo encontrar esse usuário')
-
+        if (!member) {
+            let embed = client.botMessage.messageNotFound('member')
             interaction.reply({ embeds:[embed], ephemeral:true })
+            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
+            .catch(() => {return})
             return
         }
 
-        let hoursOption = interaction.options.getNumber('hours', false) || 0
+        client.botMessage.target = member.user
+        let hoursOption = interaction.options.getNumber('hours', false)
 
-        let seconds = 0
-        seconds += hoursOption * 3600
+        let deleteMessageSeconds:number | undefined = 0
+        deleteMessageSeconds = !hoursOption?undefined:hoursOption * 3600
+        
+        let reason = `${interaction.user.username}#${interaction.user.discriminator} => ${member.user.username}#${member.user.discriminator}: ${reasonOption || 'not found'}`
 
-        let reason = `o ${interaction.user.username}#${interaction.user.discriminator} me pediu para banir o ${user.user.username}. o motivos foi: ${reasonOption || ''}`
-
-        user.ban({reason:reason, deleteMessageSeconds:seconds == 0?undefined:seconds})
-        .then((user) => {
-            embed
-            .setColor('Green')
-            .setTitle('✅ Sucesso ✅')
-            .setThumbnail(user.user.displayAvatarURL())
-            .setDescription(`o ${user.user.username} foi banida(o) com sucesso`)
-
+        member.ban({reason:reason, deleteMessageSeconds:deleteMessageSeconds})
+        .then(() => {
+            let embed = client.botMessage.messageActionSuccess('ban')
             interaction.reply({ embeds:[embed], ephemeral:true })
-            return
+            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
+            .catch(() => {return})
         })
         .catch(() => {
-            embed
-            .setColor('Red')
-            .setTitle('❌ Permissão negada Bot ❌')
-            .setDescription('eu não tenho permissão para banir esse membro')
-
+            let embed = client.botMessage.messageBotError()
             interaction.reply({ embeds:[embed], ephemeral:true })
+            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
+            .catch(() => {return})
         }) 
     }
 }

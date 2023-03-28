@@ -10,7 +10,7 @@ const SlashCommand = new SlashCommandBuilder()
 .setDescriptionLocalizations({
     'pt-BR':'desbanir um usuário do servidor'
 })
-.addUserOption(Option =>
+.addStringOption(Option =>
     Option
     .setName('userid')
     .setNameLocalizations({
@@ -39,62 +39,63 @@ export default {
     data:SlashCommand,
     async execute (interaction:ChatInputCommandInteraction<any>, client:Client) {
 
-        let embed = new EmbedBuilder()
-        .setAuthor({ name:interaction.user.username, iconURL:interaction.user.displayAvatarURL()})
-        .setTimestamp()
+        client.botMessage.languages = interaction.locale
+        client.botMessage.user = interaction.user
 
-        if (!interaction.member.permissions.has(PermissionFlagsBits.BanMembers)) {
-            embed
-            .setColor('Red')
-            .setTitle('❌ Permissão negada Membro ❌')
-            .setDescription('permissão necessária: banir membro')
-
+        if (!interaction.appPermissions?.has('BanMembers')) {
+            let embed = client.botMessage.messageBotPermission('BanMembers')
             interaction.reply({ embeds:[embed], ephemeral:true })
+            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
+            .catch(() => {return})
             return
         }
 
-        let userId = interaction.options.getString('userid', true)
+        if (!interaction.member.permissions.has(PermissionFlagsBits.BanMembers)) {
+            let embed = client.botMessage.messageUserPermission('BanMembers')
+            interaction.reply({ embeds:[embed], ephemeral:true })
+            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
+            .catch(() => {return})
+            return
+        }
+
+        let userIdOption = interaction.options.getString('userid', true)
         let reasonOption = interaction.options.getString('reason')
 
         await interaction.guild.bans.fetch()
         .then(async (bans) => {
-            let user = bans.get(userId)
-            if (!user) {
-                embed
-                .setColor('Red')
-                .setTitle('❌ não encontrado ❌')
-                .setDescription('não consigo encontrar esse usuário na lista de banimentos')
-    
+            let userBan = bans.get(userIdOption)
+            if (!userBan) {
+                let embed = client.botMessage.messageNotFound('member')
                 interaction.reply({ embeds:[embed], ephemeral:true })
-                
+                .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
+                .catch(() => {return})
                 return
             }
+            let user = userBan.user
 
-            let reason = `o ${interaction.user.username}#${interaction.user.discriminator} me pediu para desBanir o ${user.user.username} o motivos foi: ${reasonOption || ''}`
+            let reason = `${interaction.user.username}#${interaction.user.discriminator} => ${user.username}: ${reasonOption || ''}`
 
-            interaction.guild.members.unban(user.user.id,reason)
+            interaction.guild.members.unban(user.id,reason)
             .then(() => {
-                embed
-                .setColor('Green')
-                .setTitle('✅ Sucesso ✅')
+                client.botMessage.target = user
 
-                if (user) {
-                    embed
-                    .setThumbnail(user.user.displayAvatarURL())
-                    .setDescription(`o ${user.user.username} foi desBanido com sucesso`)
-                }
-    
+                let embed = client.botMessage.messageActionSuccess('unban')
                 interaction.reply({ embeds:[embed], ephemeral:true })
-                return
+                .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
+                .catch(() => {return})
             })
             .catch(() => {
-                embed
-                .setColor('Red')
-                .setTitle('❌ Permissão negada Bot ❌')
-                .setDescription('eu não tenho permissão para banir esse membro')
-    
+                let embed = client.botMessage.messageBotError()
                 interaction.reply({ embeds:[embed], ephemeral:true })
+                .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
+                .catch(() => {return})
             })
+        })
+        .catch(() => {
+            let embed = client.botMessage.messageBotError()
+            interaction.reply({ embeds:[embed], ephemeral:true })
+            .then((message) => {setTimeout(() => {message.delete()},client.botCommandDeleteTime)})
+            .catch(() => {return})
         })
     }
 }
