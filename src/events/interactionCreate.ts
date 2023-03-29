@@ -18,5 +18,8 @@ export default (interaction:discord.Interaction<discord.CacheType>, client:Clien
         return
     }
 
+    client.botMessage.languages = interaction.locale
+    client.botMessage.user = interaction.user
+
     command.execute(interaction, client)
 }

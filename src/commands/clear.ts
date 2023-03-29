@@ -33,9 +33,6 @@ export default {
     data:SlashCommand,
     async execute (interaction:ChatInputCommandInteraction<any>, client:Client) {
 
-        client.botMessage.languages = interaction.locale
-        client.botMessage.user = interaction.user
-
         if (!interaction.appPermissions?.has('ManageMessages')) {
             client.replyCommand(client.botMessage.messageBotPermission('ManageMessages'),interaction,true)
             return

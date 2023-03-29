@@ -8,7 +8,8 @@ interface TranslateActive {
 }
 
 type DiscordType = 'member' | 'channel'
-type Action = 'ban' | 'kick' | 'clear' | 'unban'
+type Action = 'ban' | 'kick' | 'clear' | 'unban' | 'setChannelName' | 'setGuildName'
+type LoadingType = 'botLoading'
 
 class Message {
 
@@ -16,6 +17,7 @@ class Message {
     private permissionTranslateObject:{[key:string]:TranslateActive} = {}
     private discordTranslateObject:{[key:string]:TranslateActive} = {}
     private actionTranslateObject:{[key:string]:TranslateActive} = {}
+    private loadingTranslateObject:{[key:string]:TranslateActive} = {}
     public user?:User
     public target?:User
 
@@ -32,6 +34,14 @@ class Message {
             ManageMessages: {
                 'en-US':'manage messages',
                 'pt-BR':'gerenciar mensagem'
+            },
+            ManageChannels: {
+                'en-US':'manage channels',
+                'pt-BR':'gerenciar canal'
+            },
+            ManageGuild: {
+                'en-US':'manage guild',
+                'pt-BR':'gerenciar servidor'
             }
         }
         this.discordTranslateObject = {
@@ -72,6 +82,27 @@ class Message {
             .setThumbnail('https://i.ibb.co/G586fDS/incorrect.png')
             .setColor('Red')
         }
+        return embed
+    }
+
+    public messageLoading(loadingType:LoadingType): EmbedBuilder {
+
+        this.loadingTranslateObject = {
+            botLoading: {
+                'en-US':'the bot is loading...',
+                'pt-BR':'o bot estar carregando...'
+            }
+        }
+
+        let titleTranslate:TranslateActive = {
+            "en-US":'Loading',
+            'pt-BR':'Carregando'
+        }
+
+        let embed = this.createEmbed(false)
+        .setTitle(`✅ ${titleTranslate[this.languages] || titleTranslate['en-US']} ✅`)
+        .setDescription(this.loadingTranslateObject[loadingType][this.languages] || this.loadingTranslateObject[loadingType]['en-US'])
+
         return embed
     }
 
@@ -209,6 +240,14 @@ class Message {
             clear: {
                 'en-US':'successfully deleted message',
                 'pt-BR':'mensagem apagada com sucesso'
+            },
+            setChannelName: {
+                'en-US':'channel name has been successfully changed',
+                'pt-BR':'nome do canal foi alterado com sucesso'
+            },
+            setGuildName: {
+                'en-US':'guild name has been successfully changed',
+                'pt-BR':'nome do servidor foi alterado com sucesso'
             }
         }
 

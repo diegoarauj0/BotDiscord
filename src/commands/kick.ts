@@ -44,9 +44,6 @@ export default {
     data:SlashCommand,
     async execute (interaction:ChatInputCommandInteraction<any>, client:Client) {
 
-        client.botMessage.languages = interaction.locale
-        client.botMessage.user = interaction.user
-
         if (!interaction.appPermissions?.has('KickMembers')) {
             client.replyCommand(client.botMessage.messageBotPermission('KickMembers'), interaction,true)
             return
