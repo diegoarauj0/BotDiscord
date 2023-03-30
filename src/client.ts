@@ -55,7 +55,7 @@ class Client extends discord.Client {
                         body.push(slashCommand.data.toJSON())
                         console.log(`${commandsFile[c]}: ok`)
                     } catch(reason) {
-                        console.log(`${commandsFile} error:${reason}`)
+                        console.log(`${commandsFile[c]} error:${reason}`)
                     } 
                 }
                 await this.REST.put(discord.Routes.applicationCommands(this.botId),{body:body}).catch((reason) => {reject(reason)})

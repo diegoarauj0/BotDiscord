@@ -64,7 +64,7 @@ export default {
             client.replyCommand(client.botMessage.messageNotFound('member'), interaction, true)
             return
         }
-
+        
         member.setNickname(nicknameOption,`${interaction.member.user.username}#${interaction.member.user.discriminator}`)
         .then(() => {
             client.replyCommand(client.botMessage.messageActionSuccess('setNickname'), interaction, true)

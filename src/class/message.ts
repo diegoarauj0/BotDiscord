@@ -8,7 +8,7 @@ interface TranslateActive {
 }
 
 type DiscordType = 'member' | 'channel'
-type Action = 'ban' | 'kick' | 'clear' | 'unban' | 'setChannelName' | 'setGuildName' | 'setNickname'
+type Action = 'ban' | 'kick' | 'clear' | 'unban' | 'setChannelName' | 'setGuildName' | 'setNickname' | 'createChannel'
 type LoadingType = 'botLoading'
 type AbleType = 'bannable' | 'kickable' | 'moderatable'
 
@@ -268,6 +268,10 @@ class Message {
             setNickname: {
                 'en-US':'nickname changed successfully',
                 'pt-BR':'apelido alterado com sucesso'
+            },
+            createChannel: {
+                'en-US':'successfully created channel',
+                'pt-BR':'canal criado com sucesso'
             }
         }
 
