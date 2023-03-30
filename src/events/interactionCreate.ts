@@ -20,6 +20,7 @@ export default (interaction:discord.Interaction<discord.CacheType>, client:Clien
 
     client.botMessage.languages = interaction.locale
     client.botMessage.user = interaction.user
+    client.botMessage.target = undefined
 
     command.execute(interaction, client)
 }

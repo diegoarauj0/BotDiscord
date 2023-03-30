@@ -8,8 +8,9 @@ interface TranslateActive {
 }
 
 type DiscordType = 'member' | 'channel'
-type Action = 'ban' | 'kick' | 'clear' | 'unban' | 'setChannelName' | 'setGuildName'
+type Action = 'ban' | 'kick' | 'clear' | 'unban' | 'setChannelName' | 'setGuildName' | 'setNickname'
 type LoadingType = 'botLoading'
+type AbleType = 'bannable' | 'kickable' | 'moderatable'
 
 class Message {
 
@@ -18,6 +19,7 @@ class Message {
     private discordTranslateObject:{[key:string]:TranslateActive} = {}
     private actionTranslateObject:{[key:string]:TranslateActive} = {}
     private loadingTranslateObject:{[key:string]:TranslateActive} = {}
+    private ableTranslateObject:{[key:string]:TranslateActive} = {}
     public user?:User
     public target?:User
 
@@ -42,6 +44,10 @@ class Message {
             ManageGuild: {
                 'en-US':'manage guild',
                 'pt-BR':'gerenciar servidor'
+            },
+            ManageNicknames: {
+                'en-US':'manage nicknames',
+                'pt-BR':'gerenciar apelidos'
             }
         }
         this.discordTranslateObject = {
@@ -144,21 +150,31 @@ class Message {
         return embed
     }
 
-    public messageBannableOrkickable(action:'kickable' |'bannable'): EmbedBuilder {
+    public messageAble(action:AbleType): EmbedBuilder {
 
         let titleTranslate:TranslateActive = {
             "en-US":'Permission denied bot',
             'pt-BR':'permissão negada bot'
         }
 
-        let descriptionTranslate:TranslateActive = {
-            "en-US":`I can't ${action == 'kickable'?'kick':'ban'} this user`,
-            'pt-BR':`não posso ${action == 'kickable'?'expulsar':'banir'} esse usuário, provavelmente ele tem um cargo maior do que eu`
+        this.ableTranslateObject = {
+            bannable: {
+                "en-US":"I can't ban this user",
+                'pt-BR':'não posso banir esse usuário, provavelmente ele tem um cargo maior do que eu'
+            },
+            kickable: {
+                "en-US":"I can't kick this user",
+                'pt-BR':'não posso expulsar esse usuário, provavelmente ele tem um cargo maior do que eu'
+            },
+            moderatable: {
+                "en-US":"I can't manage this user",
+                'pt-BR':'não posso gerenciar esse usuário, provavelmente ele tem um cargo maior do que eu'
+            }
         }
 
         let embed = this.createEmbed(true)
         .setTitle(`❌ ${titleTranslate[this.languages] || titleTranslate['en-US']} ❌`)
-        .setDescription(descriptionTranslate[this.languages] || descriptionTranslate['en-US'])
+        .setDescription(this.ableTranslateObject[action][this.languages] || this.ableTranslateObject[action]['en-US'])
 
         return embed
     }
@@ -248,6 +264,10 @@ class Message {
             setGuildName: {
                 'en-US':'guild name has been successfully changed',
                 'pt-BR':'nome do servidor foi alterado com sucesso'
+            },
+            setNickname: {
+                'en-US':'nickname changed successfully',
+                'pt-BR':'apelido alterado com sucesso'
             }
         }
 

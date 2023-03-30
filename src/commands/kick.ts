@@ -64,7 +64,7 @@ export default {
         }
 
         if (!member.kickable) {
-            client.replyCommand(client.botMessage.messageBannableOrkickable('kickable'), interaction,true)
+            client.replyCommand(client.botMessage.messageAble('kickable'), interaction,true)
             return
         }
 

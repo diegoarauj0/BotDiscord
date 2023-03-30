@@ -80,7 +80,7 @@ export default {
         }
 
         if (!member.bannable) {
-            client.replyCommand(client.botMessage.messageBannableOrkickable('bannable'), interaction, true)
+            client.replyCommand(client.botMessage.messageAble('bannable'), interaction, true)
             return
         }
 
