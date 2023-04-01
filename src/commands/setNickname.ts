@@ -31,7 +31,7 @@ const SlashCommand = new SlashCommandBuilder()
     Option
     .setName('member')
     .setNameLocalizations({
-        'pt-BR':'membros',
+        'pt-BR':'membro',
         'en-US':'member'
     })
     .setDescription('member')
@@ -40,6 +40,20 @@ const SlashCommand = new SlashCommandBuilder()
         'en-US':'member'
     })
     .setRequired(true)
+)
+.addStringOption(Option => 
+    Option
+    .setName('reason')
+    .setNameLocalizations({
+        'pt-BR':'motivo',
+        'en-US':'reason'
+    })
+    .setDescription('reason for the ban')
+    .setDescriptionLocalizations({
+        'pt-BR':'motivo do banimento',
+        'en-US':'reason for the ban'
+    })
+    .setRequired(false)
 )
 
 export default {
@@ -61,6 +75,7 @@ export default {
         let nicknameOption = interaction.options.getString('nickname',true)
         let memberOption = interaction.options.getUser('member',true)
         let member = interaction.guild.members.cache.get(memberOption.id)
+        let reasonOption = interaction.options.getString('reason',false)
 
         if (!member) {
             client.commandsMessage.embedNotFound('membro')
@@ -70,9 +85,15 @@ export default {
         let reason = `
         quem altero o apelido: ${interaction.user.username}#${interaction.user.discriminator}👮‍♂️\n
         nome antigo: ${member.user.username}➡️🚪\n
-        nome novo: ${nicknameOption}📝
+        nome novo: ${nicknameOption}📝\n
+        motivo: ${reasonOption || 'não definido'}📝
         `
 
+        client.commandsMessage.setReason = reasonOption || undefined
+        client.commandsMessage.setNewName = nicknameOption
+        client.commandsMessage.setOldName = member.nickname || undefined
+        client.commandsMessage.setTargetUser = member.user
+        
         member.setNickname(nicknameOption,reason)
         .then(() => {
             client.commandsMessage.embedAction(true,'setNickname')

@@ -89,7 +89,8 @@ export default {
             })
         })
         .catch(() => {
-            client.replyCommand(client.botMessage.messageBotError(),interaction,true)
+            client.commandsMessage.embedBotError()
+            client.commandsMessage.send(true,true)
         })
     }
 }

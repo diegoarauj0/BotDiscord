@@ -1,4 +1,5 @@
-import { EmbedBuilder, User, PermissionsString, ChatInputCommandInteraction } from 'discord.js'
+import { EmbedBuilder, User, PermissionsString, ChatInputCommandInteraction, Collection, APIEmbedField, LocaleString } from 'discord.js'
+import { Command } from '../types/discord'
 
 type Action = 'ban' | 'kick' | 'clear' | 'unban' | 'setChannelName' | 'setGuildName' | 'setNickname' | 'createChannel'
 
@@ -12,6 +13,8 @@ class CommandsMessage {
     private oldName?:string
     private newName?:string
     private interaction?:ChatInputCommandInteraction<any>
+    private commands?:Collection<string, Command>
+    private languages?:LocaleString
 
     constructor() {
 
@@ -19,6 +22,14 @@ class CommandsMessage {
 
     set setInteractionUser(user:User | undefined) {
         this.interactionUser = user
+    }
+
+    set setCommands(commands:Collection<string, Command>) {
+        this.commands = commands
+    }
+
+    set setLocale(language:LocaleString) {
+        this.languages = language
     }
 
     set setInteraction(interaction:ChatInputCommandInteraction<any>) {
@@ -115,6 +126,23 @@ class CommandsMessage {
         this.embed
         .setTitle('😵‍💫 | bot confuso | 😵‍💫')
         .setDescription('**não foi possível finalizar seu comando devido um error não identificado**')
+    }
+
+    public embedHelp(): void {
+        if (!this.commands) return
+        if (!this.languages) return
+        this.embedDefault(true)
+        this.embedAuthor()
+        let fields:Array<APIEmbedField> = []
+        this.commands.map((command) => {
+            fields.push({
+                name:`/${command.data.name_localizations?.[this.languages || 'en-US'] || command.data.name}`,
+                value:command.data.description_localizations?.[this.languages || 'en-US'] || command.data.description
+            })
+        })
+        this.embed
+        .setTitle('Lista de comandos')
+        .setFields(fields)
     }
 
     private converteNumberEmojis(number:number | undefined): string {

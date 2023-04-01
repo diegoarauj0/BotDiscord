@@ -16,7 +16,7 @@ const SlashCommand = new SlashCommandBuilder()
     Option
     .setName('member')
     .setNameLocalizations({
-        'pt-BR':'membros',
+        'pt-BR':'membro',
         'en-US':'member'
     })
     .setDescription('member to be banned')

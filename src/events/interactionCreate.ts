@@ -18,13 +18,10 @@ export default (interaction:discord.Interaction<discord.CacheType>, client:Clien
         return
     }
 
-    client.botMessage.languages = interaction.locale
-    client.botMessage.user = interaction.user
-    client.botMessage.target = undefined
-
     client.commandsMessage.resetValue()
     client.commandsMessage.setInteractionUser = interaction.user
     client.commandsMessage.setInteraction = interaction
+    client.commandsMessage.setLocale = interaction.locale
 
     command.execute(interaction, client)
 }

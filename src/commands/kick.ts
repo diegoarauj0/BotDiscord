@@ -16,7 +16,7 @@ const SlashCommand = new SlashCommandBuilder()
     Option
     .setName('member')
     .setNameLocalizations({
-        'pt-BR':'membros',
+        'pt-BR':'membro',
         'en-US':'member'
     })
     .setDescription('member to be kicked')
@@ -80,7 +80,7 @@ export default {
         motivo: ${reasonOption || 'não definido'}📝
         `
 
-        client.commandsMessage.setReason = reason
+        client.commandsMessage.setReason = reasonOption || undefined
 
         member.kick(reason)
         .then(() => {

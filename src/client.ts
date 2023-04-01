@@ -3,7 +3,6 @@ import fs from 'fs/promises'
 import path from 'path'
 import connect from './database/mongoose'
 import { Command } from './types/discord'
-import Message from './class/message'
 import CommandsMessage from './class/commandsMessage'
 
 class Client extends discord.Client {
@@ -13,7 +12,6 @@ class Client extends discord.Client {
     public botCommands:discord.Collection<string, Command> = new discord.Collection()
     private REST:discord.REST
     private botStatus:discord.Collection<string, {text:string, Activity:discord.ActivityOptions}> = new discord.Collection
-    public botMessage:Message = new Message()
     public replyCommand:(embed:EmbedBuilder, interaction:ChatInputCommandInteraction<any>,deleteMessage:boolean) => void
     public commandsMessage:CommandsMessage = new CommandsMessage()
 
