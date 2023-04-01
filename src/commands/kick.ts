@@ -45,12 +45,14 @@ export default {
     async execute (interaction:ChatInputCommandInteraction<any>, client:Client) {
 
         if (!interaction.appPermissions?.has('KickMembers')) {
-            client.replyCommand(client.botMessage.messageBotPermission('KickMembers'), interaction,true)
+            client.commandsMessage.embedPermissionDenied('KickMembers', 'bot')
+            client.commandsMessage.send(true,true)
             return
         }
 
-        if (!interaction.member.permissions.has(PermissionFlagsBits.KickMembers)) {
-            client.replyCommand(client.botMessage.messageUserPermission('KickMembers'), interaction,true)
+        if (!interaction.memberPermissions.has('KickMembers')) {
+            client.commandsMessage.embedPermissionDenied('KickMembers', 'member')
+            client.commandsMessage.send(true,true)
             return
         }
 
@@ -59,24 +61,35 @@ export default {
         let member = interaction.guild.members.cache.get(userOption.id)
 
         if (!member) {
-            client.replyCommand(client.botMessage.messageNotFound('member'),interaction,true)
+            client.commandsMessage.embedNotFound('membro')
+            client.commandsMessage.send(true,true)
             return
         }
+
+        client.commandsMessage.setTargetUser = member.user
 
         if (!member.kickable) {
-            client.replyCommand(client.botMessage.messageAble('kickable'), interaction,true)
+            client.commandsMessage.embedUnable('kickable')
+            client.commandsMessage.send(true,true)
             return
         }
 
-        let reason = `${interaction.user.username}#${interaction.user.discriminator} => ${member.user.username}#${member.user.discriminator}: ${reasonOption || ''}`
+        let reason = `
+        membro que expulsor: ${interaction.user.username}#${interaction.user.discriminator}👮‍♂️\n
+        membro expulso: ${member.user.username}#${member.user.discriminator}➡️🚪\n
+        motivo: ${reasonOption || 'não definido'}📝
+        `
+
+        client.commandsMessage.setReason = reason
 
         member.kick(reason)
-        .then((member) => {
-            client.botMessage.target = member.user
-            client.replyCommand(client.botMessage.messageActionSuccess('kick'),interaction,true)
+        .then(() => {
+            client.commandsMessage.embedAction(true,'kick')
+            client.commandsMessage.send(true,false)
         })
         .catch(() => {
-            client.replyCommand(client.botMessage.messageBotError(),interaction,true)
-        }) 
+            client.commandsMessage.embedAction(false,'kick')
+            client.commandsMessage.send(true,true)
+        })
     }
 }

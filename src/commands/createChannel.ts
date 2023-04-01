@@ -95,18 +95,34 @@ const SlashCommand = new SlashCommandBuilder()
     .setMinLength(1)
     .setRequired(false)
 )
+.addStringOption(Option => 
+    Option
+    .setName('reason')
+    .setNameLocalizations({
+        'pt-BR':'motivo',
+        'en-US':'reason'
+    })
+    .setDescription('reason for the ban')
+    .setDescriptionLocalizations({
+        'pt-BR':'motivo do banimento',
+        'en-US':'reason for the ban'
+    })
+    .setRequired(false)
+)
 
 export default {
     data:SlashCommand,
     async execute (interaction:ChatInputCommandInteraction<any>, client:Client) {
 
         if (!interaction.appPermissions?.has('ManageChannels')) {
-            client.replyCommand(client.botMessage.messageBotPermission('ManageChannels'), interaction, true)
+            client.commandsMessage.embedPermissionDenied('ManageChannels', 'bot')
+            client.commandsMessage.send(true,true)
             return
         }
 
-        if (!interaction.memberPermissions?.has('ManageChannels')) {
-            client.replyCommand(client.botMessage.messageUserPermission('ManageChannels'), interaction, true)
+        if (!interaction.memberPermissions.has('ManageChannels')) {
+            client.commandsMessage.embedPermissionDenied('ManageChannels', 'member')
+            client.commandsMessage.send(true,true)
             return
         }
 
@@ -114,12 +130,22 @@ export default {
         let nsfwOption = interaction.options.getBoolean('nsfw',false)
         let typeOption = interaction.options.getNumber('type', true)
         let topicOption = interaction.options.getString('topic', false)
+        let reasonOption = interaction.options.getString('reason',false)
         let userLimitOption = interaction.options.getNumber('user_limit', false)
         let guild:Guild = interaction.guild
 
+        let reason = `
+        quem crio o canal: ${interaction.user.username}#${interaction.user.discriminator}👮‍♂️\n
+        nome: ${interaction.user.username}#${interaction.user.discriminator}📝\n
+        motivo: ${reasonOption || 'não definido'} 📝
+        `
+
+        client.commandsMessage.setReason = reasonOption || undefined
+        client.commandsMessage.setNewName = nameOption
+
         guild.channels.create({
             name:nameOption,
-            reason:`${interaction.member.user.username}#${interaction.member.user.discriminator}`,
+            reason:reason,
             parent:interaction.channel?.parentId,
             nsfw:nsfwOption || false,
             type:typeOption,
@@ -127,11 +153,12 @@ export default {
             topic:topicOption || undefined,
         })
         .then(() => {
-            client.replyCommand(client.botMessage.messageActionSuccess('createChannel'), interaction, true)
-            return
+            client.commandsMessage.embedAction(true,'createChannel')
+            client.commandsMessage.send(true,false)
         })
         .catch(() => {
-            client.replyCommand(client.botMessage.messageBotError(), interaction, true)
+            client.commandsMessage.embedAction(false,'createChannel')
+            client.commandsMessage.send(true,true)
         })
     }
 }

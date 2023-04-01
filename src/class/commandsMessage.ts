@@ -227,7 +227,7 @@ class CommandsMessage {
         }}
         actionTranslate['createChannel'] = {success:{
             description:`
-                ➡️ apelido novo: ${this.newName} 🟢\n
+                ➡️ nome do canal: ${this.newName} 🟢\n
                 ➡️ membro que executor o comando: ${interactionUsername} 👮‍♂️\n
                 ➡️ motivo: ${this.reason || 'não definido'} 📝
             `,

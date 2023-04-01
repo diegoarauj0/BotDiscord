@@ -22,5 +22,9 @@ export default (interaction:discord.Interaction<discord.CacheType>, client:Clien
     client.botMessage.user = interaction.user
     client.botMessage.target = undefined
 
+    client.commandsMessage.resetValue()
+    client.commandsMessage.setInteractionUser = interaction.user
+    client.commandsMessage.setInteraction = interaction
+
     command.execute(interaction, client)
 }

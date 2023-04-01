@@ -47,12 +47,14 @@ export default {
     async execute (interaction:ChatInputCommandInteraction<any>, client:Client) {
 
         if (!interaction.appPermissions?.has('ManageNicknames')) {
-            client.replyCommand(client.botMessage.messageBotPermission('ManageNicknames'), interaction, true)
+            client.commandsMessage.embedPermissionDenied('ManageNicknames', 'bot')
+            client.commandsMessage.send(true,true)
             return
         }
 
-        if (!interaction.memberPermissions?.has('ManageNicknames')) {
-            client.replyCommand(client.botMessage.messageUserPermission('ManageNicknames'), interaction, true)
+        if (!interaction.memberPermissions.has('ManageNicknames')) {
+            client.commandsMessage.embedPermissionDenied('ManageNicknames', 'member')
+            client.commandsMessage.send(true,true)
             return
         }
 
@@ -61,16 +63,24 @@ export default {
         let member = interaction.guild.members.cache.get(memberOption.id)
 
         if (!member) {
-            client.replyCommand(client.botMessage.messageNotFound('member'), interaction, true)
+            client.commandsMessage.embedNotFound('membro')
+            client.commandsMessage.send(true,true)
             return
         }
-        
-        member.setNickname(nicknameOption,`${interaction.member.user.username}#${interaction.member.user.discriminator}`)
+        let reason = `
+        quem altero o apelido: ${interaction.user.username}#${interaction.user.discriminator}👮‍♂️\n
+        nome antigo: ${member.user.username}➡️🚪\n
+        nome novo: ${nicknameOption}📝
+        `
+
+        member.setNickname(nicknameOption,reason)
         .then(() => {
-            client.replyCommand(client.botMessage.messageActionSuccess('setNickname'), interaction, true)
+            client.commandsMessage.embedAction(true,'setNickname')
+            client.commandsMessage.send(true,false)
         })
         .catch(() => {
-            client.replyCommand(client.botMessage.messageBotError(), interaction, true)
+            client.commandsMessage.embedAction(false,'setNickname')
+            client.commandsMessage.send(true,true)
         })
     }
 }

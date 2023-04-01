@@ -26,31 +26,59 @@ const SlashCommand = new SlashCommandBuilder()
     })
     .setRequired(true)
 )
+.addStringOption(Option => 
+    Option
+    .setName('reason')
+    .setNameLocalizations({
+        'pt-BR':'motivo',
+        'en-US':'reason'
+    })
+    .setDescription('reason for the ban')
+    .setDescriptionLocalizations({
+        'pt-BR':'motivo do banimento',
+        'en-US':'reason for the ban'
+    })
+    .setRequired(false)
+)
 
 export default {
     data:SlashCommand,
     async execute (interaction:ChatInputCommandInteraction<any>, client:Client) {
 
         if (!interaction.appPermissions?.has('ManageGuild')) {
-            client.replyCommand(client.botMessage.messageBotPermission('ManageGuild'), interaction, true)
+            client.commandsMessage.embedPermissionDenied('ManageGuild', 'bot')
+            client.commandsMessage.send(true,true)
             return
         }
 
-        if (!interaction.memberPermissions?.has('ManageGuild')) {
-            client.replyCommand(client.botMessage.messageUserPermission('ManageGuild'), interaction, true)
+        if (!interaction.memberPermissions.has('ManageGuild')) {
+            client.commandsMessage.embedPermissionDenied('ManageGuild', 'member')
+            client.commandsMessage.send(true,true)
             return
         }
 
         let nameOption = interaction.options.getString('name',true)
+        let reasonOption = interaction.options.getString('reason',true)
         let guild:Guild = interaction.guild
+        let reason = `
+        quem altero o nome do servidor: ${interaction.user.username}#${interaction.user.discriminator}👮‍♂️\n
+        nome antigo: ${guild?.name}➡️🚪\n
+        nome novo: ${nameOption}📝\n
+        motivo: ${reasonOption}📝
+        `
 
-        guild.setName(nameOption, `${interaction.member.user.username}#${interaction.member.user.discriminator}`)
+        client.commandsMessage.setReason = reasonOption || undefined
+        client.commandsMessage.setNewName = nameOption
+        client.commandsMessage.setOldName = guild.name
+
+        guild.setName(nameOption, reason)
         .then(() => {
-            client.replyCommand(client.botMessage.messageActionSuccess('setGuildName'), interaction, true)
-            return
+            client.commandsMessage.embedAction(true,'setGuildName')
+            client.commandsMessage.send(true,false)
         })
         .catch(() => {
-            client.replyCommand(client.botMessage.messageBotError(), interaction, true)
+            client.commandsMessage.embedAction(false,'setGuildName')
+            client.commandsMessage.send(true,true)
         })
     }
 }
