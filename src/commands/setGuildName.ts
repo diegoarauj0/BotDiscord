@@ -1,11 +1,12 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, Guild, EmbedBuilder } from 'discord.js'
+import { SlashCommandBuilder, ChatInputCommandInteraction, Guild, PermissionFlagsBits} from 'discord.js'
 import Client from '../client'
 
 const SlashCommand = new SlashCommandBuilder()
-.setName('set_guild_name')
+.setName('change_guild_name')
+.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 .setNameLocalizations({
-    "en-US":'set_guild_name',
-    'pt-BR':'definir_nome_servidor'
+    "en-US":'change_guild_name',
+    'pt-BR':'alterar_nome_servidor'
 })
 .setDescription('change guild name')
 .setDescriptionLocalizations({
@@ -64,7 +65,7 @@ export default {
         quem altero o nome do servidor: ${interaction.user.username}#${interaction.user.discriminator}👮‍♂️\n
         nome antigo: ${guild?.name}➡️🚪\n
         nome novo: ${nameOption}📝\n
-        motivo: ${reasonOption}📝
+        motivo: ${reasonOption || 'não definido'}📝
         `
 
         client.commandsMessage.setReason = reasonOption || undefined

@@ -1,11 +1,12 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, Guild, ChannelType } from 'discord.js'
+import { SlashCommandBuilder, ChatInputCommandInteraction, PermissionFlagsBits} from 'discord.js'
 import Client from '../client'
 
 const SlashCommand = new SlashCommandBuilder()
-.setName('remove_channel')
+.setName('del_channel')
+.setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
 .setNameLocalizations({
-    "en-US":'remove_channel',
-    'pt-BR':'remover_canal'
+    "en-US":'del_channel',
+    'pt-BR':'del_canal'
 })
 .setDescription('remove channel')
 .setDescriptionLocalizations({

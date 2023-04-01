@@ -1,11 +1,12 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, GuildTextBasedChannel, EmbedBuilder } from 'discord.js'
+import { SlashCommandBuilder, ChatInputCommandInteraction, GuildTextBasedChannel, PermissionFlagsBits } from 'discord.js'
 import Client from '../client'
 
 const SlashCommand = new SlashCommandBuilder()
-.setName('set_channel_name')
+.setName('change_channel_name')
+.setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
 .setNameLocalizations({
-    "en-US":'set_channel_name',
-    'pt-BR':'definir_nome_canal'
+    "en-US":'change_channel_name',
+    'pt-BR':'alterar_nome_canal'
 })
 .setDescription('change channel name')
 .setDescriptionLocalizations({
@@ -64,7 +65,7 @@ export default {
         quem altero o nome do canal: ${interaction.user.username}#${interaction.user.discriminator}👮‍♂️\n
         nome antigo: ${channel?.name}➡️🚪\n
         nome novo: ${nameOption}📝\n
-        motivo:${reasonOption}📝
+        motivo:${reasonOption || 'não definido'}📝
         `
 
         client.commandsMessage.setReason = reasonOption || undefined

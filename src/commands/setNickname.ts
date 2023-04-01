@@ -1,11 +1,12 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, GuildTextBasedChannel, EmbedBuilder } from 'discord.js'
+import { SlashCommandBuilder, ChatInputCommandInteraction, PermissionFlagsBits } from 'discord.js'
 import Client from '../client'
 
 const SlashCommand = new SlashCommandBuilder()
-.setName('set_nickname')
+.setName('change_nickname')
+.setDefaultMemberPermissions(PermissionFlagsBits.ManageNicknames)
 .setNameLocalizations({
-    "en-US":'set_nickname',
-    'pt-BR':'definir_apelido'
+    "en-US":'change_nickname',
+    'pt-BR':'alterar_apelido'
 })
 .setDescription('change nickname')
 .setDescriptionLocalizations({

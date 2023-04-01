@@ -3,6 +3,7 @@ import Client from '../client'
 
 const SlashCommand = new SlashCommandBuilder()
 .setName('ban')
+.setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
 .setNameLocalizations({
     'pt-BR':'banir',
     'en-US':'ban'

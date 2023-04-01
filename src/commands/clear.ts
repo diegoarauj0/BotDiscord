@@ -3,6 +3,7 @@ import Client from '../client'
 
 const SlashCommand = new SlashCommandBuilder()
 .setName('clear')
+.setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
 .setNameLocalizations({
     'pt-BR':'clear',
     'en-US':'clear'

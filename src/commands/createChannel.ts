@@ -1,11 +1,12 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, Guild, ChannelType } from 'discord.js'
+import { SlashCommandBuilder, ChatInputCommandInteraction, Guild, PermissionFlagsBits } from 'discord.js'
 import Client from '../client'
 
 const SlashCommand = new SlashCommandBuilder()
 .setName('add_channel')
+.setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
 .setNameLocalizations({
     "en-US":'add_channel',
-    'pt-BR':'adicionar_canal'
+    'pt-BR':'add_canal'
 })
 .setDescription('create new channel')
 .setDescriptionLocalizations({

@@ -90,7 +90,7 @@ class CommandsMessage {
         this.embedAuthor()
 
        this.embed
-        .setTitle(`👮‍♂️|${author == 'bot'?'eu não tenho':'você não tem'} permissão para executar esse comando|👮‍♂️`)
+        .setTitle(`👮‍♂️|${author == 'bot'?'não tenho':'você não tem'} permissão para executar esse comando|👮‍♂️`)
         .setDescription(`**permissão necessária ➡️ | ${permission} |**`)
     }
 

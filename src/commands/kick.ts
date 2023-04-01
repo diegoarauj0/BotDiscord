@@ -3,6 +3,7 @@ import Client from '../client'
 
 const SlashCommand = new SlashCommandBuilder()
 .setName('kick')
+.setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
 .setNameLocalizations({
     'en-US':'kick',
     'pt-BR':'expulsar'
