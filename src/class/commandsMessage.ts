@@ -1,7 +1,7 @@
 import { EmbedBuilder, User, PermissionsString, ChatInputCommandInteraction, Collection, APIEmbedField, LocaleString } from 'discord.js'
 import { Command } from '../types/discord'
 
-type Action = 'ban' | 'kick' | 'clear' | 'unban' | 'setChannelName' | 'setGuildName' | 'setNickname' | 'createChannel'
+type Action = 'ban' | 'kick' | 'clear' | 'unban' | 'setChannelName' | 'setGuildName' | 'setNickname' | 'createChannel' | 'removeChannel'
 
 class CommandsMessage {
 
@@ -261,8 +261,19 @@ class CommandsMessage {
             `,
             title:'canal foi criado com sucesso'
         },error:{
-            description:'devido a um erro desconhecido não foi criar um novo canal',
+            description:'devido a um erro desconhecido não foi possível criar um novo canal',
             title:'não foi possível criar um novo canal'
+        }}
+        actionTranslate['removeChannel'] = {success:{
+            description:`
+            ➡️ nome do canal: ${this.oldName} 🟢\n
+            ➡️ membro que executor o comando: ${interactionUsername} 👮‍♂️\n
+            ➡️ motivo: ${this.reason || 'não definido'} 📝
+            `,
+            title:'canal foi removido com sucesso'
+        },error:{
+            description:'devido a um erro desconhecido não foi possível remover o canal',
+            title:'não foi possível remover o canal'
         }}
 
         return actionTranslate
