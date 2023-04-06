@@ -11,27 +11,27 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const SlashCommand = new discord_js_1.SlashCommandBuilder()
-    .setName('kick')
-    .setDefaultMemberPermissions(discord_js_1.PermissionFlagsBits.KickMembers)
+    .setName('del_channel')
+    .setDefaultMemberPermissions(discord_js_1.PermissionFlagsBits.ManageChannels)
     .setNameLocalizations({
-    'en-US': 'kick',
-    'pt-BR': 'expulsar'
+    "en-US": 'del_channel',
+    'pt-BR': 'del_canal'
 })
-    .setDescription('kick member from server')
+    .setDescription('remove channel')
     .setDescriptionLocalizations({
-    'pt-BR': 'expulsar o membro do servidor',
-    'en-US': 'kick member from server'
+    'pt-BR': 'remover o canal',
+    'en-US': 'remove channel'
 })
-    .addUserOption(Option => Option
-    .setName('member')
+    .addChannelOption(Option => Option
+    .setName('channel')
     .setNameLocalizations({
-    'pt-BR': 'membro',
-    'en-US': 'member'
+    'pt-BR': 'canal',
+    'en-US': 'channel'
 })
-    .setDescription('member to be kicked')
+    .setDescription('the channel to be removed')
     .setDescriptionLocalizations({
-    'pt-BR': 'membro a ser expulso',
-    'en-US': 'member to be kicked'
+    'pt-BR': 'o canal que vai ser removido',
+    'en-US': 'the channel to be removed'
 })
     .setRequired(true))
     .addStringOption(Option => Option
@@ -51,43 +51,38 @@ exports.default = {
     execute(interaction, client) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            if (!((_a = interaction.appPermissions) === null || _a === void 0 ? void 0 : _a.has('KickMembers'))) {
-                client.commandsMessage.embedPermissionDenied('KickMembers', 'bot');
+            if (!((_a = interaction.appPermissions) === null || _a === void 0 ? void 0 : _a.has('ManageChannels'))) {
+                client.commandsMessage.embedPermissionDenied('ManageChannels', 'bot');
                 client.commandsMessage.send(true, true);
                 return;
             }
-            if (!interaction.memberPermissions.has('KickMembers')) {
-                client.commandsMessage.embedPermissionDenied('KickMembers', 'member');
+            if (!interaction.memberPermissions.has('ManageChannels')) {
+                client.commandsMessage.embedPermissionDenied('ManageChannels', 'member');
                 client.commandsMessage.send(true, true);
                 return;
             }
-            let userOption = interaction.options.getUser('member', true);
-            let reasonOption = interaction.options.getString('reason');
-            let member = interaction.guild.members.cache.get(userOption.id);
-            if (!member) {
-                client.commandsMessage.embedNotFound('membro');
-                client.commandsMessage.send(true, true);
-                return;
-            }
-            client.commandsMessage.setTargetUser = member.user;
-            if (!member.kickable) {
-                client.commandsMessage.embedUnable('kickable');
+            let channelOption = interaction.options.getChannel('channel', true);
+            let reasonOption = interaction.options.getString('reason', false);
+            let channel = interaction.guild.channels.cache.get(channelOption.id);
+            if (!channel) {
+                client.commandsMessage.embedNotFound('canal');
                 client.commandsMessage.send(true, true);
                 return;
             }
             let reason = `
-        membro que expulsor: ${interaction.user.username}#${interaction.user.discriminator}👮‍♂️\n
-        membro expulso: ${member.user.username}#${member.user.discriminator}➡️🚪\n
+        membro que removeu o canal: ${interaction.user.username}#${interaction.user.discriminator}👮‍♂️\n
+        canal removido: ${channel.name}🗑️\n
         motivo: ${reasonOption || 'não definido'}📝
         `;
+            client.commandsMessage.setOldName = channel.name;
             client.commandsMessage.setReason = reasonOption || undefined;
-            member.kick(reason)
+            channel.delete(reason)
                 .then(() => {
-                client.commandsMessage.embedAction(true, 'kick');
+                client.commandsMessage.embedAction(true, 'removeChannel');
                 client.commandsMessage.send(true, false);
             })
                 .catch(() => {
-                client.commandsMessage.embedAction(false, 'kick');
+                client.commandsMessage.embedAction(false, 'removeChannel');
                 client.commandsMessage.send(true, true);
             });
         });

@@ -19,5 +19,9 @@ exports.default = (interaction, client) => {
         interaction.reply({ embeds: [embed] });
         return;
     }
+    client.commandsMessage.resetValue();
+    client.commandsMessage.setInteractionUser = interaction.user;
+    client.commandsMessage.setInteraction = interaction;
+    client.commandsMessage.setLocale = interaction.locale;
     command.execute(interaction, client);
 };

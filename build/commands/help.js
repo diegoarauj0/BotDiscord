@@ -25,11 +25,9 @@ exports.default = {
     data: SlashCommand,
     execute(interaction, client) {
         return __awaiter(this, void 0, void 0, function* () {
-            client.botMessage.languages = interaction.locale;
-            client.botMessage.user = interaction.user;
-            client.botMessage.messageHelp(client.botCommands);
-            let embed = client.botMessage.messageHelp(client.botCommands);
-            client.replyCommand(embed, interaction, false);
+            client.commandsMessage.setCommands = client.botCommands;
+            client.commandsMessage.embedHelp();
+            client.commandsMessage.send(true, false);
         });
     }
 };

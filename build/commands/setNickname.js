@@ -11,27 +11,40 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const SlashCommand = new discord_js_1.SlashCommandBuilder()
-    .setName('kick')
-    .setDefaultMemberPermissions(discord_js_1.PermissionFlagsBits.KickMembers)
+    .setName('change_nickname')
+    .setDefaultMemberPermissions(discord_js_1.PermissionFlagsBits.ManageNicknames)
     .setNameLocalizations({
-    'en-US': 'kick',
-    'pt-BR': 'expulsar'
+    "en-US": 'change_nickname',
+    'pt-BR': 'alterar_apelido'
 })
-    .setDescription('kick member from server')
+    .setDescription('change nickname')
     .setDescriptionLocalizations({
-    'pt-BR': 'expulsar o membro do servidor',
-    'en-US': 'kick member from server'
+    'pt-BR': 'alterar apelido',
+    'en-US': 'change nickname'
 })
+    .addStringOption(Option => Option
+    .setName('nickname')
+    .setNameLocalizations({
+    'en-US': 'nickname',
+    'pt-BR': 'apelido'
+})
+    .setDescription('new nickname')
+    .setDescriptionLocalizations({
+    'en-US': 'new nickname',
+    'pt-BR': 'novo apelido'
+})
+    .setMaxLength(32)
+    .setRequired(true))
     .addUserOption(Option => Option
     .setName('member')
     .setNameLocalizations({
     'pt-BR': 'membro',
     'en-US': 'member'
 })
-    .setDescription('member to be kicked')
+    .setDescription('member')
     .setDescriptionLocalizations({
-    'pt-BR': 'membro a ser expulso',
-    'en-US': 'member to be kicked'
+    'pt-BR': 'membro',
+    'en-US': 'member'
 })
     .setRequired(true))
     .addStringOption(Option => Option
@@ -51,43 +64,42 @@ exports.default = {
     execute(interaction, client) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            if (!((_a = interaction.appPermissions) === null || _a === void 0 ? void 0 : _a.has('KickMembers'))) {
-                client.commandsMessage.embedPermissionDenied('KickMembers', 'bot');
+            if (!((_a = interaction.appPermissions) === null || _a === void 0 ? void 0 : _a.has('ManageNicknames'))) {
+                client.commandsMessage.embedPermissionDenied('ManageNicknames', 'bot');
                 client.commandsMessage.send(true, true);
                 return;
             }
-            if (!interaction.memberPermissions.has('KickMembers')) {
-                client.commandsMessage.embedPermissionDenied('KickMembers', 'member');
+            if (!interaction.memberPermissions.has('ManageNicknames')) {
+                client.commandsMessage.embedPermissionDenied('ManageNicknames', 'member');
                 client.commandsMessage.send(true, true);
                 return;
             }
-            let userOption = interaction.options.getUser('member', true);
-            let reasonOption = interaction.options.getString('reason');
-            let member = interaction.guild.members.cache.get(userOption.id);
+            let nicknameOption = interaction.options.getString('nickname', true);
+            let memberOption = interaction.options.getUser('member', true);
+            let member = interaction.guild.members.cache.get(memberOption.id);
+            let reasonOption = interaction.options.getString('reason', false);
             if (!member) {
                 client.commandsMessage.embedNotFound('membro');
                 client.commandsMessage.send(true, true);
                 return;
             }
-            client.commandsMessage.setTargetUser = member.user;
-            if (!member.kickable) {
-                client.commandsMessage.embedUnable('kickable');
-                client.commandsMessage.send(true, true);
-                return;
-            }
             let reason = `
-        membro que expulsor: ${interaction.user.username}#${interaction.user.discriminator}👮‍♂️\n
-        membro expulso: ${member.user.username}#${member.user.discriminator}➡️🚪\n
+        quem altero o apelido: ${interaction.user.username}#${interaction.user.discriminator}👮‍♂️\n
+        nome antigo: ${member.user.username}➡️🚪\n
+        nome novo: ${nicknameOption}📝\n
         motivo: ${reasonOption || 'não definido'}📝
         `;
             client.commandsMessage.setReason = reasonOption || undefined;
-            member.kick(reason)
+            client.commandsMessage.setNewName = nicknameOption;
+            client.commandsMessage.setOldName = member.nickname || undefined;
+            client.commandsMessage.setTargetUser = member.user;
+            member.setNickname(nicknameOption, reason)
                 .then(() => {
-                client.commandsMessage.embedAction(true, 'kick');
+                client.commandsMessage.embedAction(true, 'setNickname');
                 client.commandsMessage.send(true, false);
             })
                 .catch(() => {
-                client.commandsMessage.embedAction(false, 'kick');
+                client.commandsMessage.embedAction(false, 'setNickname');
                 client.commandsMessage.send(true, true);
             });
         });

@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const SlashCommand = new discord_js_1.SlashCommandBuilder()
     .setName('clear')
+    .setDefaultMemberPermissions(discord_js_1.PermissionFlagsBits.ManageMessages)
     .setNameLocalizations({
     'pt-BR': 'clear',
     'en-US': 'clear'
@@ -40,28 +41,32 @@ exports.default = {
     execute(interaction, client) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            client.botMessage.languages = interaction.locale;
-            client.botMessage.user = interaction.user;
             if (!((_a = interaction.appPermissions) === null || _a === void 0 ? void 0 : _a.has('ManageMessages'))) {
-                client.replyCommand(client.botMessage.messageBotPermission('ManageMessages'), interaction, true);
+                client.commandsMessage.embedPermissionDenied('ManageMessages', 'bot');
+                client.commandsMessage.send(true, true);
                 return;
             }
-            if (!interaction.member.permissions.has(discord_js_1.PermissionFlagsBits.ManageMessages)) {
-                client.replyCommand(client.botMessage.messageUserPermission('ManageMessages'), interaction, true);
+            if (!interaction.memberPermissions.has('ManageMessages')) {
+                client.commandsMessage.embedPermissionDenied('ManageMessages', 'member');
+                client.commandsMessage.send(true, true);
                 return;
             }
             let amountOption = interaction.options.getNumber('amount', true);
             let channel = interaction.channel;
+            client.commandsMessage.setMessageNumber = amountOption;
             if (!channel) {
-                client.replyCommand(client.botMessage.messageNotFound('channel'), interaction, true);
+                client.commandsMessage.embedNotFound('canal');
+                client.commandsMessage.send(true, true);
                 return;
             }
             channel.bulkDelete(amountOption)
                 .then(() => {
-                client.replyCommand(client.botMessage.messageActionSuccess('clear'), interaction, true);
+                client.commandsMessage.embedAction(true, 'clear');
+                client.commandsMessage.send(true, false);
             })
                 .catch(() => {
-                client.replyCommand(client.botMessage.messageBotError(), interaction, true);
+                client.commandsMessage.embedAction(false, 'clear');
+                client.commandsMessage.send(true, true);
             });
         });
     }

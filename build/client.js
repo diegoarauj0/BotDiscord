@@ -39,13 +39,13 @@ const discord_js_1 = __importDefault(require("discord.js"));
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
 const mongoose_1 = __importDefault(require("./database/mongoose"));
-const message_1 = __importDefault(require("./class/message"));
+const commandsMessage_1 = __importDefault(require("./class/commandsMessage"));
 class Client extends discord_js_1.default.Client {
     constructor(token, id) {
         super({ intents: ['GuildModeration', 'Guilds', 'GuildMembers', 'GuildMessages', 'MessageContent', 'GuildMessageTyping', 'DirectMessages', 'GuildBans'] });
         this.botCommands = new discord_js_1.default.Collection();
         this.botStatus = new discord_js_1.default.Collection;
-        this.botMessage = new message_1.default();
+        this.commandsMessage = new commandsMessage_1.default();
         this.botId = id;
         this.botToken = token;
         this.REST = new discord_js_1.default.REST({ version: '10' }).setToken(this.botToken);
@@ -86,7 +86,7 @@ class Client extends discord_js_1.default.Client {
                         console.log(`${commandsFile[c]}: ok`);
                     }
                     catch (reason) {
-                        console.log(`${commandsFile} error:${reason}`);
+                        console.log(`${commandsFile[c]} error:${reason}`);
                     }
                 }
                 yield this.REST.put(discord_js_1.default.Routes.applicationCommands(this.botId), { body: body }).catch((reason) => { reject(reason); });

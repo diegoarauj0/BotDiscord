@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const SlashCommand = new discord_js_1.SlashCommandBuilder()
     .setName('unban')
+    .setDefaultMemberPermissions(discord_js_1.PermissionFlagsBits.BanMembers)
     .setNameLocalizations({
     'pt-BR': 'desbanir',
     'en-US': 'unban'
@@ -50,14 +51,14 @@ exports.default = {
     execute(interaction, client) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            client.botMessage.languages = interaction.locale;
-            client.botMessage.user = interaction.user;
             if (!((_a = interaction.appPermissions) === null || _a === void 0 ? void 0 : _a.has('BanMembers'))) {
-                client.replyCommand(client.botMessage.messageBotPermission('BanMembers'), interaction, true);
+                client.commandsMessage.embedPermissionDenied('BanMembers', 'bot');
+                client.commandsMessage.send(true, true);
                 return;
             }
-            if (!interaction.member.permissions.has(discord_js_1.PermissionFlagsBits.BanMembers)) {
-                client.replyCommand(client.botMessage.messageUserPermission('BanMembers'), interaction, true);
+            if (!interaction.memberPermissions.has('BanMembers')) {
+                client.commandsMessage.embedPermissionDenied('BanMembers', 'member');
+                client.commandsMessage.send(true, true);
                 return;
             }
             let userIdOption = interaction.options.getString('userid', true);
@@ -66,24 +67,30 @@ exports.default = {
                 .then((bans) => __awaiter(this, void 0, void 0, function* () {
                 let userBan = bans.get(userIdOption);
                 if (!userBan) {
-                    client.replyCommand(client.botMessage.messageNotFound('member'), interaction, true);
+                    client.commandsMessage.embedNotFound('membro');
+                    client.commandsMessage.send(true, true);
                     return;
                 }
                 let user = userBan.user;
-                let reason = `${interaction.user.username}#${interaction.user.discriminator} => ${user.username}: ${reasonOption || ''}`;
+                let reason = `
+            membro que desbaniu: ${interaction.user.username}#${interaction.user.discriminator}👮‍♂️\n
+            membro desbanido: ${user.username}#${user.discriminator}➡️🚪\n
+            motivo: ${reasonOption || 'não definido'}📝
+            `;
+                client.commandsMessage.setTargetUser = userBan.user;
                 interaction.guild.members.unban(user.id, reason)
                     .then(() => {
-                    client.botMessage.target = user;
-                    client.replyCommand(client.botMessage.messageActionSuccess('unban'), interaction, true);
-                    return;
+                    client.commandsMessage.embedAction(true, 'unban');
+                    client.commandsMessage.send(true, false);
                 })
                     .catch(() => {
-                    client.replyCommand(client.botMessage.messageBotError(), interaction, true);
-                    return;
+                    client.commandsMessage.embedAction(false, 'unban');
+                    client.commandsMessage.send(true, true);
                 });
             }))
                 .catch(() => {
-                client.replyCommand(client.botMessage.messageBotError(), interaction, true);
+                client.commandsMessage.embedBotError();
+                client.commandsMessage.send(true, true);
             });
         });
     }
