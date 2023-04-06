@@ -3,6 +3,7 @@ import Client from '../client'
 
 const SlashCommand = new SlashCommandBuilder()
 .setName('ban')
+.setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
 .setNameLocalizations({
     'pt-BR':'banir',
     'en-US':'ban'
@@ -16,7 +17,7 @@ const SlashCommand = new SlashCommandBuilder()
     Option
     .setName('member')
     .setNameLocalizations({
-        'pt-BR':'membros',
+        'pt-BR':'membro',
         'en-US':'member'
     })
     .setDescription('member to be banned')
@@ -60,16 +61,15 @@ export default {
     data:SlashCommand,
     async execute (interaction:ChatInputCommandInteraction<any>, client:Client) {
 
-        client.botMessage.languages = interaction.locale
-        client.botMessage.user = interaction.user
-
         if (!interaction.appPermissions?.has('BanMembers')) {
-            client.replyCommand(client.botMessage.messageBotPermission('BanMembers'), interaction, true)
+            client.commandsMessage.embedPermissionDenied('BanMembers', 'bot')
+            client.commandsMessage.send(true,true)
             return
         }
 
-        if (!interaction.member.permissions.has(PermissionFlagsBits.BanMembers)) {
-            client.replyCommand(client.botMessage.messageUserPermission('BanMembers'), interaction, true)
+        if (!interaction.memberPermissions.has('BanMembers')) {
+            client.commandsMessage.embedPermissionDenied('BanMembers', 'member')
+            client.commandsMessage.send(true,true)
             return
         }
 
@@ -78,28 +78,38 @@ export default {
         let member = interaction.guild.members.cache.get(memberOption.id)
 
         if (!member) {
-            client.replyCommand(client.botMessage.messageNotFound('member'), interaction, true)
+            client.commandsMessage.embedNotFound('membro')
+            client.commandsMessage.send(true,true)
             return
         }
+
+        client.commandsMessage.setTargetUser = member.user
 
         if (!member.bannable) {
-            client.replyCommand(client.botMessage.messageBannableOrkickable('bannable'), interaction, true)
+            client.commandsMessage.embedUnable('bannable')
+            client.commandsMessage.send(true,true)
             return
         }
-
-        client.botMessage.target = member.user
         
         let hoursOption = interaction.options.getNumber('hours', false)
-        let deleteMessageSeconds:number | undefined = 0
-        deleteMessageSeconds = !hoursOption?undefined:hoursOption * 3600
-        let reason = `${interaction.user.username}#${interaction.user.discriminator} => ${member.user.username}#${member.user.discriminator}: ${reasonOption || 'not found'}`
+        let deleteMessageSeconds:number | undefined = !hoursOption?undefined:hoursOption * 3600
+
+        let reason = `
+        membro que baniu: ${interaction.user.username}#${interaction.user.discriminator}👮‍♂️\n
+        membro banido: ${member.user.username}#${member.user.discriminator}➡️🚪\n
+        motivo: ${reasonOption || 'não definido'}📝
+        `
+
+        client.commandsMessage.setReason = reasonOption || undefined
 
         member.ban({reason:reason, deleteMessageSeconds:deleteMessageSeconds})
         .then(() => {
-            client.replyCommand(client.botMessage.messageActionSuccess('ban'),interaction, true)
+            client.commandsMessage.embedAction(true,'ban')
+            client.commandsMessage.send(true,false)
         })
         .catch(() => {
-            client.replyCommand(client.botMessage.messageBotError(),interaction, true)
+            client.commandsMessage.embedAction(false,'ban')
+            client.commandsMessage.send(true,true)
         }) 
     }
 }

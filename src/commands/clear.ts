@@ -3,6 +3,7 @@ import Client from '../client'
 
 const SlashCommand = new SlashCommandBuilder()
 .setName('clear')
+.setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
 .setNameLocalizations({
     'pt-BR':'clear',
     'en-US':'clear'
@@ -33,33 +34,36 @@ export default {
     data:SlashCommand,
     async execute (interaction:ChatInputCommandInteraction<any>, client:Client) {
 
-        client.botMessage.languages = interaction.locale
-        client.botMessage.user = interaction.user
-
         if (!interaction.appPermissions?.has('ManageMessages')) {
-            client.replyCommand(client.botMessage.messageBotPermission('ManageMessages'),interaction,true)
+            client.commandsMessage.embedPermissionDenied('ManageMessages', 'bot')
+            client.commandsMessage.send(true,true)
             return
         }
 
-        if (!interaction.member.permissions.has(PermissionFlagsBits.ManageMessages)) {
-            client.replyCommand(client.botMessage.messageUserPermission('ManageMessages'),interaction,true)
+        if (!interaction.memberPermissions.has('ManageMessages')) {
+            client.commandsMessage.embedPermissionDenied('ManageMessages', 'member')
+            client.commandsMessage.send(true,true)
             return
         }
 
         let amountOption = interaction.options.getNumber('amount', true)
         let channel = interaction.channel
+        client.commandsMessage.setMessageNumber = amountOption
 
         if (!channel) {
-            client.replyCommand(client.botMessage.messageNotFound('channel'),interaction,true)
+            client.commandsMessage.embedNotFound('canal')
+            client.commandsMessage.send(true,true)
             return
         }
         
         channel.bulkDelete(amountOption)
         .then(() => {
-            client.replyCommand(client.botMessage.messageActionSuccess('clear'),interaction,true)
+            client.commandsMessage.embedAction(true,'clear')
+            client.commandsMessage.send(true,false)
         })
         .catch(() => {
-            client.replyCommand(client.botMessage.messageBotError(),interaction,true)
+            client.commandsMessage.embedAction(false,'clear')
+            client.commandsMessage.send(true,true)
         })
     }
 }

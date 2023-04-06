@@ -13,11 +13,16 @@
 
 <h2>Comandos</h2>
 <ul>
-<li>/ban banir um membro</li>
-<li>/unban desbanir um membro</li>
-<li>/clear limpar o chat</li>
-<li>/help mostrar todos os comandos do bot</li>
-<li>/kick expulsar um membro</li>
+<li>/banir banir um usuário do servidor</li>
+<li>/clear limpar mensagens de um canal</li>
+<li>/add_canal criar um novo canal</li>
+<li>/ajuda mostrar lista comandos</li>
+<li>/expulsar expulsar o membro do servidor</li>
+<li>/del_canal remover o canal</li>
+<li>/alterar_nome_canal alterar o nome do canal</li>
+<li>/alterar_nome_servidor alterar o nome do servidor</li>
+<li>/alterar_apelido alterar apelido</li>
+<li>/desbanir desbanir um usuário do servidor</li>
 </ul>
 
 <hr>
